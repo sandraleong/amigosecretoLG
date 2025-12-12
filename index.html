@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Amigo Secreto Familiar</title>
+  <title>Amigo Secreto (códigos)</title>
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -13,40 +13,18 @@
       min-height: 100vh;
       margin: 0;
     }
-
     .card {
-      background: #ffffff;
+      background: #fff;
       padding: 24px 28px;
       border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
       max-width: 420px;
       width: 100%;
     }
-
-    h1 {
-      font-size: 1.4rem;
-      margin-top: 0;
-      margin-bottom: 0.25rem;
-      text-align: center;
-    }
-
-    p {
-      margin-top: 0.25rem;
-      margin-bottom: 1.25rem;
-      font-size: 0.95rem;
-      color: #4b5563;
-      text-align: center;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: #374151;
-    }
-
-    select, input {
+    h1 { font-size: 1.4rem; margin: 0 0 0.25rem; text-align: center; }
+    p  { margin: 0.25rem 0 1.25rem; font-size: 0.95rem; color: #4b5563; text-align: center; }
+    label { display:block; margin-bottom:0.5rem; font-weight:600; font-size:0.95rem; color:#374151; }
+    input {
       width: 100%;
       padding: 10px 12px;
       border-radius: 10px;
@@ -54,7 +32,6 @@
       font-size: 0.95rem;
       box-sizing: border-box;
     }
-
     button {
       margin-top: 14px;
       width: 100%;
@@ -67,11 +44,7 @@
       background: #2563eb;
       color: white;
     }
-
-    button:hover {
-      background: #1d4ed8;
-    }
-
+    button:hover { background: #1d4ed8; }
     .resultado {
       margin-top: 16px;
       padding: 12px 14px;
@@ -80,19 +53,16 @@
       text-align: center;
       display: none;
     }
-
     .resultado.ok {
       background: #ecfdf5;
       color: #166534;
       border: 1px solid #bbf7d0;
     }
-
     .resultado.error {
       background: #fef2f2;
       color: #991b1b;
       border: 1px solid #fecaca;
     }
-
     .nota {
       margin-top: 12px;
       font-size: 0.8rem;
@@ -103,87 +73,81 @@
 </head>
 <body>
   <div class="card">
-    <h1>Amigo Secreto Familiar 🎁</h1>
-    <p>Selecciona tu nombre para ver a quién le vas a dar tu regalo.</p>
+    <h1>Amigo Secreto 🎁 (con códigos)</h1>
+    <p>Escribe tu código para ver a quién le vas a regalar.</p>
 
-    <label for="nombre">Tu nombre</label>
-    <select id="nombre">
-      <option value="">-- Selecciona tu nombre --</option>
-      <!--
-        🔽🔽🔽
-        EDITA ESTA LISTA CON LOS NOMBRES DE TU FAMILIA
-        Asegúrate de que coincidan exactamente con las claves del objeto "asignaciones" en el script.
-      -->
-      <option value="Licette">Licette</option>
-      <option value="Javier">Javier</option>
-      <option value="Fressy">Fressy</option>
-      <option value="Alexia">Alexia</option>
-      <option value="Mayron">Mayron</option>
-      <option value="Raul">Raul</option>
-      <option value="Sandra">Sandra</option>
-
-    </select>
+    <label for="codigo">Tu código</label>
+    <input id="codigo" type="text" placeholder="Ej: luna" autocomplete="off" />
 
     <button id="ver">Ver a quién le regalo</button>
 
     <div id="resultado" class="resultado"></div>
 
     <div class="nota">
-      Esta página no guarda datos ni pide correos.  
-      Cada persona solo ve a quién le toca regalar.
+      No se guardan datos. Comparte el código a cada persona de forma privada.
     </div>
   </div>
 
   <script>
-    // 🔐 ASIGNACIONES FIJAS
-    // Aquí defines quién le regala a quién.
-    // 📝 IMPORTANTE:
-    //  - Cada clave es el nombre que aparece en el <select>.
-    //  - Cada valor es la persona a la que le tiene que comprar regalo.
-    //  - Cambia los nombres de ejemplo por los de tu familia.
-
-    const asignaciones = {
-      "Mayron": "Raul",
-      "Raul": "Javier",
-      "Javier": "Fressy",
-      "Fressy": "Licette",
-      "Licette": "Sandra",
-      "Sandra": "Alexia",
-      "Alexia": "Mayron",
-      
+    // 🔐 ASIGNACIONES POR CÓDIGO
+    // Clave: código (en minúsculas, sin espacios)
+    // Valor: nombre de la persona a quien le regalan
+    const asignacionesPorCodigo = {
+      "luna": "Juan",
+      "sol": "María",
+      "nube": "Pedro",
+      "rio": "Ana",
+      "estrella": "Luis"
     };
 
-    const selectNombre = document.getElementById("nombre");
+    const inputCodigo = document.getElementById("codigo");
     const botonVer = document.getElementById("ver");
     const divResultado = document.getElementById("resultado");
 
-    botonVer.addEventListener("click", () => {
-      const nombre = selectNombre.value;
-
-      if (!nombre) {
-        mostrarMensaje("Por favor selecciona tu nombre.", false);
-        return;
-      }
-
-      const destinatario = asignaciones[nombre];
-
-      if (!destinatario) {
-        mostrarMensaje(
-          "No hay una asignación registrada para este nombre. Revisa la configuración.",
-          false
-        );
-        return;
-      }
-
-      mostrarMensaje("Te tocó regalarle a: <strong>" + destinatario + "</strong>", true);
+    botonVer.addEventListener("click", mostrar);
+    inputCodigo.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") mostrar();
     });
 
-    function mostrarMensaje(texto, esOK) {
+    function mostrar() {
+      const codigo = normalizar(inputCodigo.value);
+
+      if (!codigo) {
+        pintar("Escribe tu código, por favor.", false);
+        return;
+      }
+
+      const destinatario = asignacionesPorCodigo[codigo];
+
+      if (!destinatario) {
+        pintar("Código no válido. Revisa que esté bien escrito.", false);
+        return;
+      }
+
+      pintar("Te tocó regalarle a: <strong>" + escapar(destinatario) + "</strong>", true);
+    }
+
+    function normalizar(txt) {
+      return (txt || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, ""); // quita espacios por si escriben "lu na"
+    }
+
+    function pintar(html, ok) {
       divResultado.style.display = "block";
-      divResultado.innerHTML = texto;
-      divResultado.className = "resultado " + (esOK ? "ok" : "error");
+      divResultado.innerHTML = html;
+      divResultado.className = "resultado " + (ok ? "ok" : "error");
+    }
+
+    function escapar(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
   </script>
 </body>
 </html>
-
